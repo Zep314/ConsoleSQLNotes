@@ -62,24 +62,17 @@ class View:
         print('Введите дату за которую нужно вывести список заметок в формате (дд.мм.гггг),')
         inp = input('или нажмите <Enter> для вывода всего списка: ')  # Запрос данных для фильтра по дате
 
-        filter = ''
+        my_filter = ''
         if len(inp) > 0:  # Фильтр задан
             try:
                 valid_date = time.strptime(inp, '%d.%m.%Y')  # Проверяем фильтр - (должна быть корректная дата)
-                filter = time.strftime('%Y-%m-%d', valid_date)
-                # list_data = data.get_data()  # Тут должен быть список из словарей
-                # print_head()
-                # for i in range(data.get_length()):
-                #     if time.strftime('%d.%m.%Y', valid_date) == list_data[i]['datetime'][:10]:  # Фильтрация данных
-                #         print_row(i)
-                # print_footer()
+                my_filter = time.strftime('%Y-%m-%d', valid_date)
             except ValueError:
                 print('Дата введена неверно!')
                 return 0
-        else:
-            list_data = data.get_data(filter)  # Тут должен быть список из словарей
-            print_head()
-            for i in range(len(list_data)):
-               print_row(i)
-            print_footer()
-            return len(list_data)
+        list_data = data.get_data(my_filter)  # Тут должен быть список из словарей
+        print_head()
+        for i in range(len(list_data)):
+            print_row(i)
+        print_footer()
+        return len(list_data)

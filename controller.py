@@ -6,7 +6,10 @@ from model import Data
 from log import add2log
 import settings
 
+
 class Controller:
+    _data: Data = None
+
     def __init__(self):
         self._view = View()  # объект представления
         self._data = Data()  # объект данных
@@ -40,7 +43,7 @@ class Controller:
             else:
                 self._view.print('Ошибка! Записи с таким индексом для удаления не найдено!')
                 add2log(f'Ошибка удаления записи {str(idx)}. Записи не существует!', '>')
-    #
+
     def list(self):  # Вывод данных на печать
         result_rows = self._view.show_records(self._data)
         add2log(f'Выведено {result_rows} строк базы данных', '>')
@@ -55,8 +58,8 @@ class Controller:
         self._view.print(f'Данные записаны в файл {settings.external_file}')
         add2log(f'Данные записаны в файл {settings.external_file}', '>')
 
-    def main_loop(self):
-        while True:  # Главный цикл программы
+    def main_loop(self):  # Главный цикл программы
+        while True:
             inp = input('>>> ')
             add2log(inp, '>')  # Записываем в журнал все, что вводят
             match inp.lower():
@@ -80,6 +83,8 @@ class Controller:
                     self.load()
                 case _:
                     self._view.print('Неверная команда. Для помощи наберите /help')
+        del self._data
+
     def run(self):
         self._view.info()  # Инфо программы
         self._view.print(f'Попытка соединиться с сервером {settings.db_server}')
@@ -87,13 +92,13 @@ class Controller:
         match self._data.connect():
             case settings.DB_LOGIN_ERROR:
                 self._view.print('Неверный логин/пароль для серверу')
-                add2log('Неверный логин/пароль для серверу','>')
+                add2log('Неверный логин/пароль для серверу', '>')
             case settings.DB_NO_CONNECT:
                 self._view.print('Нет соединения с сервером')
                 add2log('Нет соединения с сервером', '>')
             case settings.DB_NO_DATABASE_EXIST:
                 self._view.print('На сервере нет базы данных')
-                add2log('На сервере нет базы данных','>')
+                add2log('На сервере нет базы данных', '>')
                 user_input = input('Создать базу данных? (yes/no): ')
                 if user_input.lower() in ['yes', 'y']:
                     self._data.create_db()
@@ -108,5 +113,4 @@ class Controller:
                 self._view.print('Неизвестная ошибка')
                 add2log('Неизвестная ошибка', '>')
         add2log('Завершение работы.', '>')
-        del self._data
         self._view.buy()  # Прощаемся
